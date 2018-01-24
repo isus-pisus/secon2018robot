@@ -6,6 +6,8 @@ ser = serial.Serial()
 ser.port = "/dev/ttyACM1"
 ser.baudrate = 9600 #Define bause rate speed, set same on arduino
 try:
+    
+    ser.open()
     ser.flushInput() #flush input buffer, discarding all its contents
     ser.write("Move Forward".encode())
     ser.write("Move Reverse".encode())
@@ -13,4 +15,4 @@ try:
     ser.close()
 
 except SerialException as e:
-    print("error opening serial port " + str(e))
+    print(str(e))
