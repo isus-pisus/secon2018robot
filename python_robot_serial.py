@@ -34,6 +34,7 @@ def arduino_msg(direction, distance=None):
     return direction + ',' + str(number_of_steps(distance))
 
 def main():
+    order = []
     directions = list(get_directions())
     
     try:   
@@ -43,65 +44,73 @@ def main():
         # Direction to A
         ############
         if directions[0] == '1':
-            nav_arduino.write(arduino_msg(FORWARD, 23).encode());
-            nav_arduino.write(arduino_msg(RIGHT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 37).encode());
-            nav_arduino.write(arduino_msg(STOP).encode());
+            order.extend([{'direction': FORWARD, 'distance': 23},
+                          {'direction': RIGHT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 37},
+                          {'direction': STOP, 'distance': None}])
         else:
-            nav_arduino.write(arduino_msg(FORWARD, 23).encode());
-            nav_arduino.write(arduino_msg(LEFT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 37).encode());
-            nav_arduino.write(arduino_msg(STOP).encode());
+            order.extend([{'direction': FORWARD, 'distance': 23},
+                          {'direction': LEFT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 37},
+                          {'direction': STOP, 'distance': None}])
 
         ############
         # Direction to B
         ############
         if directions[1] == '1':
-            nav_arduino.write(arduino_msg(LEFT).encode());
-            nav_arduino.write(arduino_msg(LEFT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 37).encode());
-            nav_arduino.write(arduino_msg(RIGHT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 163).encode());
-            nav_arduino.write(arduino_msg(RIGHT).encode());
-            nav_arduino.write(arduino_msg(LEFT).encode());
-            nav_arduino.write(arduino_msg(LEFT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 37).encode());
-            nav_arduino.write(arduino_msg(STOP).encode());           
+            order.extend([{'direction': LEFT, 'distance': None},
+                          {'direction': LEFT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 37},
+                          {'direction': RIGHT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 163},
+                          {'direction': RIGHT, 'distance': None},
+                          {'direction': LEFT, 'distance': None},
+                          {'direction': LEFT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 37},
+                          {'direction': STOP, 'distance': None}])
         else:
-            nav_arduino.write(arduino_msg(RIGHT).encode());
-            nav_arduino.write(arduino_msg(RIGHT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 37).encode());
-            nav_arduino.write(arduino_msg(RIGHT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 163).encode());
-            nav_arduino.write(arduino_msg(LEFT).encode());
-            nav_arduino.write(arduino_msg(RIGHT).encode());
-            nav_arduino.write(arduino_msg(RIGHT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 37).encode());
-            nav_arduino.write(arduino_msg(STOP).encode());           
+            order.extend([{'direction': RIGHT, 'distance': None},
+                          {'direction': RIGHT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 37},
+                          {'direction': RIGHT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 163},
+                          {'direction': LEFT, 'distance': None},
+                          {'direction': RIGHT, 'distance': None},
+                          {'direction': RIGHT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 37},
+                          {'direction': STOP, 'distance': None}])
 
         ############
         # Direction to C
         ############
         if directions[1] == '1':
-            nav_arduino.write(arduino_msg(LEFT).encode());
-            nav_arduino.write(arduino_msg(LEFT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 37).encode());
-            nav_arduino.write(arduino_msg(RIGHT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 163).encode());
-            nav_arduino.write(arduino_msg(LEFT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 37).encode());
-            nav_arduino.write(arduino_msg(STOP).encode());           
+            order.extend([{'direction': LEFT, 'distance': None},
+                          {'direction': LEFT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 37},
+                          {'direction': RIGHT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 163},
+                          {'direction': RIGHT, 'distance': None},
+                          {'direction': LEFT, 'distance': None},
+                          {'direction': LEFT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 37},
+                          {'direction': STOP, 'distance': None}])       
         else:
-            nav_arduino.write(arduino_msg(RIGHT).encode());
-            nav_arduino.write(arduino_msg(RIGHT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 37).encode());
-            nav_arduino.write(arduino_msg(LEFT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 163).encode());
-            nav_arduino.write(arduino_msg(RIGHT).encode());
-            nav_arduino.write(arduino_msg(FORWARD, 37).encode());
-            nav_arduino.write(arduino_msg(STOP).encode()); 
+            order.extend([{'direction': RIGHT, 'distance': None},
+                          {'direction': RIGHT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 37},
+                          {'direction': RIGHT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 163},
+                          {'direction': LEFT, 'distance': None},
+                          {'direction': RIGHT, 'distance': None},
+                          {'direction': RIGHT, 'distance': None},
+                          {'direction': FORWARD, 'distance': 37},
+                          {'direction': STOP, 'distance': None}])
 
-        
+        for o in order:
+            nav_arduino.write(arduino_msg(o['direction'], o['distance']).encode())
+            while nav_arduino.readline() == 'Finished':
+                break
+                
         nav_arduino.flushOutput()#flush output buffer, aborting current output
         nav_arduino.close()
     except SerialException as e:
