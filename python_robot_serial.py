@@ -9,24 +9,26 @@ LEFT = 'Move Left'
 RIGHT = 'Move Right'
 STOP = 'Stop'
 
-ONE_REVOULTION = 16
+ONE_REVOLUTION = 16
 STEPS_PER_REVOLUTION = 400
 
 #The that will be used to control the stepper motors
 nav_arduino = serial.Serial()  
-nav_arduino.port = "COM8" 
+nav_arduino.port = "COM6" 
 # nav_arduino.port = "/dev/ttyACM1"
 nav_arduino.baudrate = 9600
+nav_arduino.timeout = 10
+
 
 #distance -> cm
 def number_of_steps(distance):
-    return distance / ONE_REVOULTION * STEPS_PER_REVOLUTION 
+    return distance / ONE_REVOLUTION * STEPS_PER_REVOLUTION 
 
 def get_directions():
     return '111'
 
 def arduino_msg(direction, distance=None):
-    if steps is None: 
+    if distance is None: 
     	if direction == LEFT or direction == RIGHT:
     		#Add the number of steps it takes to turn 90 degrees
         	return direction + ',' + str(number_of_steps(0))
@@ -83,7 +85,7 @@ def main():
         ############
         # Direction to C
         ############
-        if directions[1] == '1':
+        if directions[2] == '1':
             order.extend([{'direction': LEFT, 'distance': None},
                           {'direction': LEFT, 'distance': None},
                           {'direction': FORWARD, 'distance': 37},
@@ -108,9 +110,10 @@ def main():
 
         for o in order:
             nav_arduino.write(arduino_msg(o['direction'], o['distance']).encode())
-            while nav_arduino.readline() == 'Finished':
-                break
-                
+            print(arduino_msg(o['direction'], o['distance']))
+            nav_arduino.readline()
+            
+
         nav_arduino.flushOutput()#flush output buffer, aborting current output
         nav_arduino.close()
     except SerialException as e:
