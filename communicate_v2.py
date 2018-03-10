@@ -87,6 +87,7 @@ destination_C = np.array([
         ['RIGHT', 0],
         ['STOP', 0],
         ['FORWARD', 700],
+        ['STOP', 0],
 
     ],
     [
@@ -105,6 +106,7 @@ destination_C = np.array([
         ['LEFT', 0],
         ['STOP', 0],
         ['FORWARD', 700],
+        ['STOP', 0],
     ]
 ])
 
@@ -118,7 +120,7 @@ def arduino_msg(x):
 
 
 def get_direction():
-    return [0, 1, 1]
+    return [0, 1, 0]
 
 
 def join_arrays(x):
@@ -127,7 +129,8 @@ def join_arrays(x):
     return final_command
 
 
-cmd = iter(join_arrays(get_direction()))
+final_array_with_commands = join_arrays(get_direction())
+cmd = iter(final_array_with_commands)
 
 if __name__ == '__main__':
     ser.open()
@@ -139,8 +142,13 @@ if __name__ == '__main__':
         is_finished = ser.read().decode('utf-8')
         if is_finished == '1':
             print('Done!')
-            command = next(cmd)
-            print(command)
-            arduino_msg(command)
+            try:
+                command = next(cmd)
+            except StopIteration:
+                print('All done')
+                break
+            else:
+                print(command)
+                arduino_msg(command)
         ser.flushOutput()
     ser.close()
