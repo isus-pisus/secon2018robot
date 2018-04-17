@@ -1,0 +1,16 @@
+raspberryPi
+device, GPIO.BCM, physical
+ir transmitter, 11, 23
+start_button, 8, 24
+ir reciever, 18, 12
+lcd_rs, 26, 37
+lcd_e, 24, 18
+lcd_d4, 23, 16
+lcd_d5, 17, 11
+lcd_d76, 27, 13
+lcd_d7, 22, 15
+
+
+
+ardunio
+device, pin
