@@ -8,6 +8,8 @@ ser.baudrate = 9600
 ser.timeout = None
 ser.port = '/dev/ttyACM0'
 
+start = False
+
 """ Destination array is in the format
     destination_array = np.array([
         [
@@ -131,20 +133,33 @@ def check_for_valid_ir_signal():
     while get_ir_code() == [1, 1, 1, 1, 1, 1, 1, 1]:
         get_ir_code()
 
+def kiesha(d):
+    global start
+    if start == True:
+        start = not start
+    else:
+        start = True   
+
+
+
 if __name__ == '__main__':
+    lcd.write_string(u'RED BUTT = START')
     check_for_valid_ir_signal()
     final_destination = get_ir_code()
-
+    lcd.clear()
     lcd.write_string(u'Destination')
     lcd.cursor_pos = (1, 0)
     lcd.write_string("".join(str(e) for e in final_destination))
 
     final_array_with_commands = join_arrays(final_destination[5:])
     cmd = iter(final_array_with_commands)
-
+    
     ser.open()
     command = next(cmd)
     arduino_msg(command)
+    
+    GPIO.setup(20, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
+    GPIO.add_event_detect(20, GPIO.FALLING, callback = kiesha, bouncetime=300)  
 
     while 1:
         ser.flushInput()
